@@ -10,31 +10,39 @@ public class BlobBuilder : MonoBehaviour
     float width;
     Vector3[] originalVertices;
     Vector3[] deformedVertices;
+    float farthestDistance;
+    float disposition;
 
     private void Awake()
     {
         meshFilter = GetComponent<MeshFilter>();
-        //originalVertices = meshFilter.mesh.vertices;
-        //deformedVertices = originalVertices;
-        //for(int i = 0; i < originalVertices.Length; i++)
-        //{
-        //    deformedVertices[i] = originalVertices[i] + new Vector3(0.5f, 0.5f, 0.0f) * .1f/(Mathf.Clamp(Vector3.Distance(new Vector3(-.4f, -.4f, .0f), originalVertices[i]),.1f,1e10f));
-        //}
-        
     }
+
     private void Start()
     {
-        //meshFilter.mesh.vertices = deformedVertices;
+        farthestDistance = 0;
+        originalVertices = new Vector3[meshFilter.mesh.vertices.Length];
+        deformedVertices = new Vector3[meshFilter.mesh.vertices.Length];
+        originalVertices = (Vector3[]) meshFilter.mesh.vertices.Clone();
+        for(int i = 0; i < originalVertices.Length; i++)
+        {
+            float distance = Vector3.Distance(originalVertices[i], Vector3.zero);
+            if (distance > farthestDistance)
+            {
+                farthestDistance = distance;
+            }
+        }
+        disposition = .0f;
     }
 
     private void Update()
     {
-        originalVertices = meshFilter.mesh.vertices;
-        deformedVertices = originalVertices;
+        disposition += .0001f;
         for (int i = 0; i < originalVertices.Length; i++)
         {
-            deformedVertices[i] = originalVertices[i] + new Vector3(0.005f, 0.005f, 0.0f) * 
-                5.0f * .001f / Mathf.Pow((Mathf.Clamp(Vector3.Distance(new Vector3(.0f, .0f, .0f), originalVertices[i]), .001f, 1e10f)), 0.5f);
+            deformedVertices[i] = originalVertices[i] +
+                new Vector3(-disposition, 0.0f, 0.0f) *
+                .01f/Mathf.Pow(Mathf.Clamp(Vector3.Distance(new Vector3(0.296f, 0.01799f, 0.0f), originalVertices[i]), .01f, 1.0e10f),2);
         }
         meshFilter.mesh.vertices = deformedVertices;
     }
